@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MarketHub — My Products</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--bg:#0a0a0f;--surface:#13131a;--surface2:#1c1c28;--gold:#c9a84c;--gold2:#e8c96d;
+  --text:#f0ede8;--muted:#7a7a8a;--border:#2a2a3a;--border2:#1e1e2c;
+  --success:#4caf82;--danger:#e05c5c;--info:#5c8ee0;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+nav{background:rgba(10,10,15,0.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);
+  padding:0 32px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.nav-logo{display:flex;align-items:center;gap:12px;}
+.nav-logo-mark{width:36px;height:36px;background:linear-gradient(135deg,var(--gold),var(--gold2));border-radius:9px;
+  display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-weight:700;font-size:18px;color:#0a0a0f;}
+.nav-brand{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;}
+.nav-right{display:flex;align-items:center;gap:10px;}
+.nav-link{padding:7px 14px;color:var(--muted);text-decoration:none;font-size:13px;border:1px solid var(--border);border-radius:8px;transition:all .2s;}
+.nav-link:hover,.nav-link.active{color:var(--gold);border-color:var(--gold);}
+.btn-logout{padding:7px 14px;background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:8px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.btn-logout:hover{border-color:var(--danger);color:var(--danger);}
+.container{max-width:1000px;margin:40px auto;padding:0 28px;}
+.page-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:28px;}
+.page-header h1{font-family:'Playfair Display',serif;font-size:32px;font-weight:700;margin-bottom:4px;}
+.page-header h1 em{font-style:italic;color:var(--gold);}
+.page-header p{font-size:14px;color:var(--muted);}
+.btn-add-new{padding:10px 20px;background:linear-gradient(135deg,var(--gold),var(--gold2));
+  color:#0a0a0f;border-radius:9px;text-decoration:none;font-size:13px;font-weight:600;white-space:nowrap;}
+.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+table{width:100%;border-collapse:collapse;}
+thead tr{border-bottom:1px solid var(--border);}
+th{text-align:left;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);padding:14px 18px;font-weight:500;}
+td{padding:13px 18px;font-size:13px;border-bottom:1px solid var(--border2);vertical-align:middle;}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr:hover td{background:var(--surface2);}
+.name-cell{font-weight:500;font-size:14px;}
+.cat-badge{font-size:10px;padding:2px 8px;background:rgba(201,168,76,0.1);color:var(--gold);border-radius:4px;border:1px solid rgba(201,168,76,0.2);}
+.price-cell{font-weight:600;color:var(--gold);}
+.stock-ok{color:var(--success);font-weight:500;}
+.stock-low{color:#e0a84c;font-weight:500;}
+.stock-out{color:var(--danger);font-weight:500;}
+.actions{display:flex;gap:8px;}
+.btn-edit{padding:6px 14px;background:var(--surface2);border:1px solid var(--border);
+  border-radius:7px;color:var(--muted);font-size:12px;text-decoration:none;transition:all .2s;}
+.btn-edit:hover{border-color:var(--info);color:var(--info);}
+.btn-del{padding:6px 14px;background:transparent;border:1px solid var(--border);
+  border-radius:7px;color:var(--muted);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;}
+.btn-del:hover{border-color:var(--danger);color:var(--danger);}
+.empty{text-align:center;padding:80px 20px;color:var(--muted);}
+.empty-icon{font-size:48px;margin-bottom:16px;}
+.empty h3{font-size:18px;color:var(--text);margin-bottom:8px;}
+.empty-link{display:inline-block;margin-top:16px;padding:10px 20px;
+  background:linear-gradient(135deg,var(--gold),var(--gold2));color:#0a0a0f;border-radius:8px;text-decoration:none;font-size:13px;font-weight:600;}
+.desc-cell{max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted);}
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-logo"><div class="nav-logo-mark">M</div><span class="nav-brand">MarketHub</span></div>
+  <div class="nav-right">
+    <a href="/products" class="nav-link">All Products</a>
+    <a href="/orders" class="nav-link">My Orders</a>
+    <a href="/seller/my-products" class="nav-link active">My Products</a>
+    <a href="/seller/orders" class="nav-link">Orders Received</a>
+    <form method="post" th:action="@{/logout}" style="margin:0;">
+      <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+      <button class="btn-logout" type="submit">Sign Out</button>
+    </form>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="page-header">
+    <div>
+      <h1>My <em>Products</em></h1>
+      <p>Products you have listed — edit or delete them here</p>
+    </div>
+    <a href="/products" class="btn-add-new">+ Add New Product</a>
+  </div>
+
+  <div th:if="${products.empty}" class="empty">
+    <div class="empty-icon">📦</div>
+    <h3>No products yet</h3>
+    <p>You haven't listed any products on the marketplace.</p>
+    <a href="/products" class="empty-link">+ Add Your First Product</a>
+  </div>
+
+  <div class="table-wrap" th:unless="${products.empty}">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Name</th>
+          <th>Category</th>
+          <th>Price</th>
+          <th>Stock</th>
+          <th>Description</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="p : ${products}">
+          <td th:text="${p.id}"></td>
+          <td class="name-cell" th:text="${p.name}"></td>
+          <td><span class="cat-badge" th:text="${p.category ?: 'General'}"></span></td>
+          <td class="price-cell" th:text="'$' + ${#numbers.formatDecimal(p.price, 1, 2)}"></td>
+          <td>
+            <span class="stock-ok"  th:if="${p.stock != null and p.stock > 10}"  th:text="${p.stock}"></span>
+            <span class="stock-low" th:if="${p.stock != null and p.stock <= 10 and p.stock > 0}" th:text="'Low: ' + ${p.stock}"></span>
+            <span class="stock-out" th:if="${p.stock == null or p.stock == 0}">Out of Stock</span>
+          </td>
+          <td class="desc-cell" th:text="${p.description ?: '—'}"></td>
+          <td>
+            <div class="actions">
+              <a th:href="@{/products/edit/{id}(id=${p.id})}" class="btn-edit">✏ Edit</a>
+              <form th:action="@{/products/delete/{id}(id=${p.id})}" method="post" style="margin:0;">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <button class="btn-del" onclick="return confirm('Delete this product?')" type="submit">🗑 Delete</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</body>
+</html>
