@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"/><title>Admin Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--bg:#0a0a0f;--surface:#13131a;--surface2:#1c1c28;--gold:#c9a84c;--gold2:#e8c96d;
+  --text:#f0ede8;--muted:#7a7a8a;--border:#2a2a3a;--success:#4caf82;--danger:#e05c5c;--info:#5c8ee0;--warn:#e0a84c;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;}
+.sidebar{width:220px;min-width:220px;background:var(--surface);border-right:1px solid var(--border);
+  padding:24px 16px;display:flex;flex-direction:column;gap:6px;position:sticky;top:0;height:100vh;}
+.logo{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;
+  padding:12px 10px 20px;border-bottom:1px solid var(--border);margin-bottom:10px;}
+.logo span{color:var(--gold);}
+.nav-item{padding:10px 14px;border-radius:8px;color:var(--muted);text-decoration:none;
+  font-size:13px;transition:all .2s;display:flex;align-items:center;gap:8px;}
+.nav-item:hover,.nav-item.active{background:rgba(201,168,76,0.08);color:var(--gold);}
+.nav-item.danger:hover{background:rgba(224,92,92,0.08);color:var(--danger);}
+.nav-bottom{margin-top:auto;}
+.main{flex:1;padding:32px;overflow-y:auto;}
+h1{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;margin-bottom:24px;}
+h1 em{font-style:italic;color:var(--gold);}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:32px;}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center;}
+.stat-num{font-family:'Playfair Display',serif;font-size:32px;font-weight:700;margin-bottom:4px;}
+.stat-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
+.c-u{color:var(--info);} .c-p{color:var(--gold);} .c-o{color:var(--text);} .c-r{color:var(--success);}
+.quick-links{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+.quick-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  padding:20px 24px;text-decoration:none;transition:border-color .2s,transform .2s;}
+.quick-card:hover{border-color:var(--gold);transform:translateY(-2px);}
+.quick-icon{font-size:28px;margin-bottom:10px;}
+.quick-title{font-size:15px;font-weight:600;color:var(--text);margin-bottom:4px;}
+.quick-desc{font-size:12px;color:var(--muted);}
+</style>
+</head>
+<body>
+<nav class="sidebar">
+  <div class="logo">Market<span>Hub</span> <br/><small style="font-size:10px;color:var(--gold);font-family:'DM Sans'">ADMIN PANEL</small></div>
+  <a href="/admin/dashboard" class="nav-item active">🏠 Dashboard</a>
+  <a href="/admin/users"     class="nav-item">👥 Users</a>
+  <a href="/admin/products"  class="nav-item">📦 Products</a>
+  <a href="/admin/orders"    class="nav-item">🧾 Orders</a>
+  <a href="/admin/reviews"   class="nav-item">⭐ Reviews</a>
+  <div class="nav-bottom">
+    <a href="/products" class="nav-item">🛍 Marketplace</a>
+    <form method="post" action="/logout">
+      <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+      <button style="width:100%;text-align:left;background:none;border:none;cursor:pointer;"
+              class="nav-item danger" type="submit">🚪 Sign Out</button>
+    </form>
+  </div>
+</nav>
+<div class="main">
+  <h1>Admin <em>Dashboard</em></h1>
+  <div class="stats-grid">
+    <div class="stat"><div class="stat-num c-u" th:text="${userCount}">0</div><div class="stat-label">Total Users</div></div>
+    <div class="stat"><div class="stat-num c-p" th:text="${productCount}">0</div><div class="stat-label">Products</div></div>
+    <div class="stat"><div class="stat-num c-o" th:text="${orderCount}">0</div><div class="stat-label">Orders</div></div>
+    <div class="stat"><div class="stat-num c-r" th:text="'$'+${#numbers.formatDecimal(totalRevenue,1,2)}">$0</div><div class="stat-label">Revenue</div></div>
+  </div>
+  <div class="quick-links">
+    <a href="/admin/users" class="quick-card">
+      <div class="quick-icon">👥</div>
+      <div class="quick-title">User Management</div>
+      <div class="quick-desc">Restrict sellers, delete accounts, view all users</div>
+    </a>
+    <a href="/admin/orders" class="quick-card">
+      <div class="quick-icon">🧾</div>
+      <div class="quick-title">Order Management</div>
+      <div class="quick-desc">Update order statuses, track deliveries</div>
+    </a>
+    <a href="/admin/reviews" class="quick-card">
+      <div class="quick-icon">⭐</div>
+      <div class="quick-title">Review Moderation</div>
+      <div class="quick-desc">Hide or delete inappropriate reviews</div>
+    </a>
+    <a href="/admin/products" class="quick-card">
+      <div class="quick-icon">📦</div>
+      <div class="quick-title">Product Management</div>
+      <div class="quick-desc">View and remove products from the marketplace</div>
+    </a>
+  </div>
+</div>
+</body>
+</html>

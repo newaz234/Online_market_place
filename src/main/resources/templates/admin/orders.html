@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"/><title>Admin — Orders</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--bg:#0a0a0f;--surface:#13131a;--surface2:#1c1c28;--gold:#c9a84c;--gold2:#e8c96d;
+  --text:#f0ede8;--muted:#7a7a8a;--border:#2a2a3a;--border2:#1e1e2c;
+  --success:#4caf82;--danger:#e05c5c;--info:#5c8ee0;--warn:#e0a84c;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;}
+.sidebar{width:220px;min-width:220px;background:var(--surface);border-right:1px solid var(--border);
+  padding:24px 16px;display:flex;flex-direction:column;gap:6px;position:sticky;top:0;height:100vh;}
+.logo{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;padding:12px 10px 20px;border-bottom:1px solid var(--border);margin-bottom:10px;}
+.logo span{color:var(--gold);}
+.nav-item{padding:10px 14px;border-radius:8px;color:var(--muted);text-decoration:none;font-size:13px;transition:all .2s;display:flex;align-items:center;gap:8px;}
+.nav-item:hover,.nav-item.active{background:rgba(201,168,76,0.08);color:var(--gold);}
+.nav-item.danger:hover{background:rgba(224,92,92,0.08);color:var(--danger);}
+.nav-bottom{margin-top:auto;}
+.main{flex:1;padding:32px;overflow-y:auto;}
+h1{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;margin-bottom:24px;}
+h1 em{font-style:italic;color:var(--gold);}
+.table-wrap{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+table{width:100%;border-collapse:collapse;}
+thead tr{border-bottom:1px solid var(--border);}
+th{text-align:left;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);padding:12px 16px;font-weight:500;}
+td{padding:11px 16px;font-size:12px;border-bottom:1px solid var(--border2);vertical-align:middle;}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr:hover td{background:var(--surface2);}
+.status-badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600;text-transform:uppercase;}
+.status-PENDING{background:rgba(224,168,76,.12);color:var(--warn);}
+.status-PROCESSING{background:rgba(92,142,224,.12);color:var(--info);}
+.status-SHIPPED{background:rgba(156,124,239,.12);color:#9c7cef;}
+.status-DELIVERED{background:rgba(76,175,130,.12);color:var(--success);}
+.status-CANCELLED{background:rgba(224,92,92,.12);color:var(--danger);}
+.status-form{display:flex;gap:6px;align-items:center;}
+.status-select{padding:4px 8px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:11px;outline:none;font-family:'DM Sans',sans-serif;}
+.btn-update{padding:4px 10px;background:linear-gradient(135deg,var(--gold),var(--gold2));border:none;border-radius:6px;color:#0a0a0f;font-size:11px;font-weight:600;cursor:pointer;}
+.total{font-weight:600;color:var(--success);}
+.contact-info{font-size:11px;color:var(--muted);}
+</style>
+</head>
+<body>
+<nav class="sidebar">
+  <div class="logo">Market<span>Hub</span><br/><small style="font-size:10px;color:var(--gold);font-family:'DM Sans'">ADMIN PANEL</small></div>
+  <a href="/admin/dashboard" class="nav-item">🏠 Dashboard</a>
+  <a href="/admin/users"     class="nav-item">👥 Users</a>
+  <a href="/admin/products"  class="nav-item">📦 Products</a>
+  <a href="/admin/orders"    class="nav-item active">🧾 Orders</a>
+  <a href="/admin/reviews"   class="nav-item">⭐ Reviews</a>
+  <div class="nav-bottom">
+    <a href="/products" class="nav-item">🛍 Marketplace</a>
+    <form method="post" action="/logout">
+      <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+      <button style="width:100%;text-align:left;background:none;border:none;cursor:pointer;" class="nav-item danger" type="submit">🚪 Sign Out</button>
+    </form>
+  </div>
+</nav>
+<div class="main">
+  <h1>Order <em>Management</em></h1>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>#</th><th>Product</th><th>Buyer</th><th>Contact</th><th>Qty</th><th>Total</th><th>Status</th><th>Update</th></tr></thead>
+      <tbody>
+        <tr th:each="o : ${orders}">
+          <td th:text="${o.id}"></td>
+          <td th:text="${o.product.name}"></td>
+          <td th:text="${o.buyer.username}"></td>
+          <td class="contact-info">
+            <span th:if="${o.fullName}" th:text="${o.fullName}"></span><br/>
+            <span th:if="${o.phone}" th:text="${o.phone}"></span>
+          </td>
+          <td th:text="${o.quantity}"></td>
+          <td class="total" th:text="'$'+${#numbers.formatDecimal(o.product.price*o.quantity,1,2)}"></td>
+          <td><span class="status-badge" th:classappend="'status-'+${o.status}" th:text="${o.status}"></span></td>
+          <td>
+            <form th:action="@{/admin/orders/{id}/status(id=${o.id})}" method="post" class="status-form">
+              <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+              <select name="status" class="status-select">
+                <option th:each="s:${allStatuses}" th:value="${s}" th:text="${s}" th:selected="${o.status==s}"></option>
+              </select>
+              <button class="btn-update" type="submit">✓</button>
+            </form>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</body>
+</html>
