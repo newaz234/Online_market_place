@@ -1,4 +1,4 @@
-package com.marketplace.controller;
+package com.example.Software.controller;
 
 import com.marketplace.service.UserService;
 import org.springframework.security.core.Authentication;
