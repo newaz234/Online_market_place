@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title th:text="${product.name} + ' — MarketHub'">Product</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--bg:#0a0a0f;--surface:#13131a;--surface2:#1c1c28;--gold:#c9a84c;--gold2:#e8c96d;
+  --text:#f0ede8;--muted:#7a7a8a;--border:#2a2a3a;--border2:#1e1e2c;
+  --success:#4caf82;--danger:#e05c5c;--info:#5c8ee0;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+nav{background:rgba(10,10,15,.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);
+  padding:0 32px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.nav-logo{display:flex;align-items:center;gap:12px;}
+.nav-logo-mark{width:36px;height:36px;background:linear-gradient(135deg,var(--gold),var(--gold2));border-radius:9px;
+  display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-weight:700;font-size:18px;color:#0a0a0f;}
+.nav-brand{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;}
+.nav-right{display:flex;align-items:center;gap:10px;}
+.nav-link{padding:7px 14px;color:var(--muted);text-decoration:none;font-size:13px;border:1px solid var(--border);border-radius:8px;}
+.nav-link:hover{color:var(--gold);border-color:var(--gold);}
+.btn-logout{padding:7px 14px;background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:8px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.container{max-width:1000px;margin:40px auto;padding:0 28px;}
+.product-layout{display:grid;grid-template-columns:380px 1fr;gap:32px;margin-bottom:48px;}
+.product-img-wrap{background:var(--surface);border:1px solid var(--border);border-radius:16px;
+  aspect-ratio:1;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.product-img{width:100%;height:100%;object-fit:cover;border-radius:16px;}
+.product-img-placeholder{font-size:80px;}
+.product-info{}
+.product-category{font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--gold);
+  font-weight:500;margin-bottom:10px;}
+.product-name{font-family:'Playfair Display',serif;font-size:32px;font-weight:700;margin-bottom:10px;line-height:1.2;}
+.avg-rating{display:flex;align-items:center;gap:8px;margin-bottom:14px;}
+.stars-display{color:var(--gold);font-size:18px;letter-spacing:2px;}
+.rating-count{font-size:13px;color:var(--muted);}
+.product-price{font-size:36px;font-weight:700;color:var(--gold);margin-bottom:8px;}
+.product-stock{font-size:13px;margin-bottom:20px;}
+.stock-ok{color:var(--success);} .stock-low{color:#e0a84c;} .stock-out{color:var(--danger);}
+.product-desc{font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:24px;
+  padding:16px;background:var(--surface2);border-radius:10px;}
+.product-seller{font-size:13px;color:var(--muted);margin-bottom:20px;}
+.product-seller strong{color:var(--text);}
+.add-to-cart-form{display:flex;gap:10px;align-items:center;}
+.qty-input{width:70px;padding:12px;background:var(--surface2);border:1px solid var(--border);
+  border-radius:10px;color:var(--text);font-size:15px;text-align:center;outline:none;}
+.qty-input:focus{border-color:var(--gold);}
+.btn-cart{flex:1;padding:13px;background:linear-gradient(135deg,var(--gold),var(--gold2));
+  border:none;border-radius:10px;color:#0a0a0f;font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.btn-cart:disabled{opacity:.4;background:var(--surface2);color:var(--muted);cursor:not-allowed;}
+.own-notice{padding:12px 16px;background:var(--surface2);border:1px solid var(--border);
+  border-radius:10px;font-size:13px;color:var(--muted);font-style:italic;}
+.alert{border-radius:10px;padding:12px 16px;margin-bottom:20px;font-size:13px;}
+.alert-success{background:rgba(76,175,130,.1);border:1px solid rgba(76,175,130,.3);color:var(--success);}
+.alert-error{background:rgba(224,92,92,.1);border:1px solid rgba(224,92,92,.3);color:var(--danger);}
+.reviews-section h2{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;margin-bottom:20px;}
+.reviews-section h2 em{font-style:italic;color:var(--gold);}
+.review-form-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:24px;}
+.review-form-title{font-size:15px;font-weight:600;margin-bottom:16px;}
+.star-rating{display:flex;gap:4px;margin-bottom:14px;}
+.star-rating input{display:none;}
+.star-rating label{font-size:28px;color:var(--muted);cursor:pointer;transition:color .15s;}
+.star-rating input:checked ~ label,.star-rating label:hover,.star-rating label:hover ~ label{color:var(--gold);}
+.star-rating{direction:rtl;display:flex;}
+.star-rating label{direction:ltr;}
+.review-textarea{width:100%;padding:12px;background:var(--surface2);border:1px solid var(--border);
+  border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;
+  outline:none;resize:vertical;min-height:90px;}
+.review-textarea:focus{border-color:var(--gold);}
+.btn-review{padding:11px 24px;background:linear-gradient(135deg,var(--gold),var(--gold2));
+  border:none;border-radius:9px;color:#0a0a0f;font-size:14px;font-weight:600;cursor:pointer;margin-top:12px;}
+.review-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  padding:18px;margin-bottom:12px;}
+.review-header{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.reviewer-name{font-weight:600;font-size:14px;}
+.review-stars{color:var(--gold);font-size:14px;}
+.review-date{font-size:11px;color:var(--muted);margin-left:auto;}
+.review-comment{font-size:13px;color:var(--text);line-height:1.6;}
+.no-reviews{text-align:center;padding:30px;color:var(--muted);font-size:14px;}
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-logo"><div class="nav-logo-mark">M</div><span class="nav-brand">MarketHub</span></div>
+  <div class="nav-right">
+    <a href="/products" class="nav-link">← Back</a>
+    <a href="/cart" class="nav-link">🛒 Cart <span th:if="${cartCount > 0}" th:text="'('+${cartCount}+')'"></span></a>
+    <a href="/orders" class="nav-link">My Orders</a>
+    <form method="post" th:action="@{/logout}" style="margin:0;">
+      <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+      <button class="btn-logout" type="submit">Sign Out</button>
+    </form>
+  </div>
+</nav>
+
+<div class="container">
+  <div th:if="${reviewSuccess}" class="alert alert-success">✓ <span th:text="${reviewSuccess}"></span></div>
+  <div th:if="${reviewError}"   class="alert alert-error">⚠ <span th:text="${reviewError}"></span></div>
+  <div th:if="${cartSuccess}"   class="alert alert-success">✓ <span th:text="${cartSuccess}"></span></div>
+
+  <div class="product-layout">
+    <div class="product-img-wrap">
+      <img th:if="${product.imageUrl}" th:src="${product.imageUrl}" class="product-img" alt=""/>
+      <div th:unless="${product.imageUrl}" class="product-img-placeholder">📦</div>
+    </div>
+    <div class="product-info">
+      <div class="product-category" th:text="${product.category ?: 'General'}"></div>
+      <div class="product-name" th:text="${product.name}"></div>
+      <div class="avg-rating" th:if="${avgRating > 0}">
+        <span class="stars-display" th:text="${'★'.repeat(avgRating.intValue()) + '☆'.repeat(5 - avgRating.intValue())}"></span>
+        <span class="rating-count" th:text="${#numbers.formatDecimal(avgRating, 1, 1)} + ' / 5'"></span>
+      </div>
+      <div class="product-price">$<span th:text="${#numbers.formatDecimal(product.price,1,2)}"></span></div>
+      <div class="product-stock">
+        <span class="stock-ok"  th:if="${product.stock != null and product.stock > 10}"  th:text="${product.stock} + ' in stock'"></span>
+        <span class="stock-low" th:if="${product.stock != null and product.stock <= 10 and product.stock > 0}" th:text="'Only ' + ${product.stock} + ' left!'"></span>
+        <span class="stock-out" th:if="${product.stock == null or product.stock == 0}">Out of Stock</span>
+      </div>
+      <div class="product-desc" th:text="${product.description ?: 'No description available.'}"></div>
+      <div class="product-seller" th:if="${product.seller != null}">
+        Sold by <strong th:text="${product.seller.username}"></strong>
+      </div>
+
+      <!-- Add to cart — নিজের product হলে দেখাবে না -->
+      <div th:if="${canReview}" sec:authorize="isAuthenticated()">
+        <form th:action="@{/cart/add}" method="post" class="add-to-cart-form">
+          <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+          <input type="hidden" name="productId" th:value="${product.id}"/>
+          <input class="qty-input" type="number" name="quantity" value="1" min="1"
+                 th:max="${product.stock ?: 999}"/>
+          <button class="btn-cart" type="submit" th:disabled="${product.stock != null and product.stock == 0}">
+            🛒 Add to Cart
+          </button>
+        </form>
+      </div>
+      <div th:unless="${canReview}" class="own-notice">
+        This is your product — you cannot purchase your own listing.
+      </div>
+    </div>
+  </div>
+
+  <!-- Reviews -->
+  <div class="reviews-section">
+    <h2>Customer <em>Reviews</em></h2>
+
+    <!-- Review form — authenticated + canReview -->
+    <div class="review-form-card" th:if="${canReview}" sec:authorize="isAuthenticated()">
+      <div class="review-form-title">Write a Review</div>
+      <form th:action="@{/reviews/add}" method="post">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+        <input type="hidden" name="productId" th:value="${product.id}"/>
+        <div class="star-rating">
+          <input type="radio" id="s5" name="rating" value="5"/><label for="s5">★</label>
+          <input type="radio" id="s4" name="rating" value="4"/><label for="s4">★</label>
+          <input type="radio" id="s3" name="rating" value="3" checked/><label for="s3">★</label>
+          <input type="radio" id="s2" name="rating" value="2"/><label for="s2">★</label>
+          <input type="radio" id="s1" name="rating" value="1"/><label for="s1">★</label>
+        </div>
+        <textarea class="review-textarea" name="comment" placeholder="Share your experience with this product…" required></textarea>
+        <button class="btn-review" type="submit">Submit Review</button>
+      </form>
+    </div>
+
+    <div th:if="${reviews.empty}" class="no-reviews">
+      No reviews yet. Be the first to review!
+    </div>
+    <div th:each="r : ${reviews}" class="review-card">
+      <div class="review-header">
+        <span class="reviewer-name" th:text="${r.reviewer.username}"></span>
+        <span class="review-stars" th:text="${'★'.repeat(r.rating) + '☆'.repeat(5 - r.rating)}"></span>
+        <span class="review-date" th:text="${#temporals.format(r.createdAt,'dd MMM yyyy')}"></span>
+      </div>
+      <div class="review-comment" th:text="${r.comment}"></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
