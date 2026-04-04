@@ -1,4 +1,4 @@
-package com.example.Software.controller;
+package com.marketplace.controller;
 
 import com.marketplace.dto.CartItem;
 import com.marketplace.service.CartService;
