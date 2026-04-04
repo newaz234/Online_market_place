@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"/><title>Error — MarketHub</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--bg:#0a0a0f;--surface:#13131a;--gold:#c9a84c;--text:#f0ede8;--muted:#7a7a8a;--border:#2a2a3a;--danger:#e05c5c;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:52px 44px;text-align:center;max-width:460px;animation:fadeUp .4s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+.code{font-family:'Playfair Display',serif;font-size:72px;font-weight:700;color:var(--danger);line-height:1;margin-bottom:16px;}
+h2{font-family:'Playfair Display',serif;font-size:22px;margin-bottom:10px;}
+p{color:var(--muted);font-size:14px;margin-bottom:28px;line-height:1.6;}
+a{display:inline-block;padding:12px 28px;background:linear-gradient(135deg,#c9a84c,#e8c96d);color:#0a0a0f;border-radius:10px;text-decoration:none;font-weight:600;font-size:14px;}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="code" th:text="${errorCode} ?: '500'"></div>
+  <h2>Something went wrong</h2>
+  <p th:text="${errorMessage} ?: 'An unexpected error occurred.'"></p>
+  <a href="/products">← Back to Products</a>
+</div>
+</body>
+</html>
