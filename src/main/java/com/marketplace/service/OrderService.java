@@ -1,10 +1,7 @@
 package com.marketplace.service;
 
 import com.marketplace.dto.CartItem;
-import com.marketplace.entity.OrderEntity;
-import com.marketplace.entity.OrderStatus;
-import com.marketplace.entity.Product;
-import com.marketplace.entity.User;
+import com.marketplace.entity.*;
 import com.marketplace.exception.ResourceNotFoundException;
 import com.marketplace.repository.OrderRepository;
 import com.marketplace.repository.ProductRepository;
