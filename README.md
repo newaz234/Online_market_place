@@ -2,7 +2,7 @@
 
 A full-stack Spring Boot marketplace with role-based access, Docker, and CI/CD pipeline.
 
-**Live URL:** `https://your-app.onrender.com`  
+**Live URL:** `[https://your-app.onrender.com](https://online-market-place-wz69.onrender.com)`  
 **GitHub:** `https://github.com/your-org/mini-marketplace`
 
 ---
