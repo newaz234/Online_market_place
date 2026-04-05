@@ -3,7 +3,7 @@
 A full-stack Spring Boot marketplace with role-based access, Docker, and CI/CD pipeline.
 
 **Live URL:** `[https://your-app.onrender.com](https://online-market-place-wz69.onrender.com)`  
-**GitHub:** `https://github.com/your-org/mini-marketplace`
+**GitHub:** `https://github.com/newaz234/Online_market_place`
 
 ---
 
@@ -122,7 +122,7 @@ Relationships:
 
 ### Using Docker (Recommended)
 ```bash
-git clone https://github.com/your-org/mini-marketplace
+git clone https://github.com/newaz234/Online_market_place
 cd mini-marketplace
 docker compose up --build
 ```
